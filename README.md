@@ -60,6 +60,8 @@ Everything a clinic would change lives in one file: **`brand.js`**. The brand ca
 
 **Example:** `brands/example-clinic/` holds a made-up clinic's `brand.js`, logo and dark-mode logo. To try it, copy `brands/example-clinic/brand.js` over the top-level `brand.js`, keeping a copy of the original first.
 
+**Live demo.** The `demo/` folder shows the example clinic brand at `/demo/` on the same site, with a note that it is not a real clinic. Its `demo/brand.js` matches the example brand with the logo paths adjusted for that folder.
+
 **One site per clinic.** Each deployment shows one brand. For several clinics, deploy a copy of the site for each one with its own `brand.js` and logo.
 
 ## Running it
