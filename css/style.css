@@ -211,8 +211,10 @@ p { margin: 0; }
 .bar-logo { max-height: 32px; max-width: 110px; width: auto; height: auto; min-width: 0; }
 .step { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .act-head { display: flex; flex-direction: column; gap: 2px; }
-.act-area { flex: 1; min-height: 280px; display: flex; flex-direction: column; gap: 12px; }
-.feedback { min-height: 1.45em; font-weight: 600; }
+/* Never shrink below what the activity needs; the screen scrolls instead of overlapping. */
+.act-area { flex: 1 0 auto; min-height: 280px; display: flex; flex-direction: column; gap: 12px; }
+/* Room for two lines, so a hint appearing doesn't push the drawing area around. */
+.feedback { flex: none; min-height: 2.9em; font-weight: 600; }
 .feedback.is-good { color: var(--success); }
 .actions { display: flex; gap: 12px; }
 .actions:empty { display: none; }
