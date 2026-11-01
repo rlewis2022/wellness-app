@@ -1,24 +1,24 @@
 /*
- * Brand for the demo page at /demo/. Same as brands/example-clinic/brand.js,
- * with the logo paths adjusted for this folder.
+ * Brand for the demo page at /demo/. "Demo Clinic" is made up.
+ * Logo paths are relative to this folder.
  */
 window.BRAND = {
-  name: 'Example Clinic Daily Practice',
-  tagline: 'Gentle daily practice for hands and mind, from your friends at Example Clinic.',
+  name: 'Demo Clinic Daily Practice',
+  tagline: 'Gentle daily practice for hands and mind, from your friends at Demo Clinic.',
   welcome: 'Welcome! Try one short session each day. There is no score and no rush.',
-  logo: '../brands/example-clinic/logo.svg',
-  logoDark: '../brands/example-clinic/logo-dark.svg',
-  logoAlt: 'Example Clinic',
+  logo: 'logo.svg',
+  logoDark: 'logo-dark.svg',
+  logoAlt: 'Demo Clinic',
   showName: true,
   colors: {
-    primary: '#5B3F8C',
-    accent: '#F2B544',
+    primary: '#0B71C3',
+    accent: '#CC3366',
   },
-  font: 'serif',
+  font: 'sans',
   contact: {
-    text: 'Questions? Call Example Clinic at 555-0100.',
+    text: 'Questions? Call Demo Clinic at 555-0100.',
     website: 'https://example.com',
-    websiteLabel: 'Visit Example Clinic',
+    websiteLabel: 'Visit Demo Clinic',
   },
   finishMessage: 'See you tomorrow!',
 };

@@ -264,7 +264,7 @@
     id: 'maze',
     group: 'hand',
     title: 'Find the way',
-    instruction: () => 'Start at the green circle. Drag along the open paths to the orange square. The lines are walls you cannot cross.',
+    instruction: () => 'Start at the green circle. Drag along the open paths to the square in the far corner. The lines are walls you cannot cross.',
     mount(api) {
       const n = { easy: 4, medium: 6, hard: 8 }[api.level];
       const walls = makeMaze(n);
@@ -354,7 +354,7 @@
           if (c === null) return;
           const i = path.indexOf(c);
           if (i === -1) {
-            api.say(path.length === 1 ? 'Start at the green circle.' : 'Keep going from the end of your line. It has an orange ring.');
+            api.say(path.length === 1 ? 'Start at the green circle.' : 'Keep going from the end of your line. It has a ring around it.');
             return;
           }
           path = path.slice(0, i + 1);
@@ -752,7 +752,7 @@
     id: 'scroll',
     group: 'phone',
     title: 'Scroll and find',
-    instruction: () => 'Slide your finger up or down on the list to scroll. Find the name in the orange box and tap it.',
+    instruction: () => 'Slide your finger up or down on the list to scroll. Find the name shown at the top and tap it.',
     mount(api) {
       const count = { easy: 15, medium: 30, hard: 50 }[api.level];
       const rounds = api.level === 'easy' ? 1 : 2;
@@ -806,7 +806,7 @@
     id: 'slider',
     group: 'phone',
     title: 'Use a slider',
-    instruction: () => 'Press the round knob and slide it to the orange marker, like turning the volume up or down. Then let go.',
+    instruction: () => 'Press the round knob and slide it to the numbered marker, like turning the volume up or down. Then let go.',
     mount(api) {
       const cfg = { easy: { rounds: 2, tol: 8 }, medium: { rounds: 3, tol: 5 }, hard: { rounds: 3, tol: 3 } }[api.level];
       let r = 0;
