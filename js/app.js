@@ -11,6 +11,8 @@
 (function () {
   const $ = (sel) => document.querySelector(sel);
   const ACTIVITIES = window.WELLNESS_ACTIVITIES || [];
+  // All words people see come from the language file (js/lang/*.js).
+  const L = window.WELLNESS_LANG;
   const vibrate = (ms) => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) { /* not supported */ } };
   const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -248,12 +250,8 @@
 
   /* ---------------- Session ---------------- */
 
-  const GROUPS = [
-    ['hand', 'Hand control'],
-    ['thinking', 'Thinking puzzle'],
-    ['phone', 'Phone skills'],
-  ];
-  const groupName = (g) => (GROUPS.find(([k]) => k === g) || [g, ''])[1];
+  const GROUPS = [['hand'], ['thinking'], ['phone']];
+  const groupName = (g) => L.ui.groups[g] || '';
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
   let session = [];
@@ -311,8 +309,8 @@
   function runActivity() {
     teardown();
     const activity = session[index];
-    $('#act-step').textContent = `${index + 1} of ${session.length}`;
-    $('#act-step').setAttribute('aria-label', `Activity ${index + 1} of ${session.length}`);
+    $('#act-step').textContent = L.ui.step(index + 1, session.length);
+    $('#act-step').setAttribute('aria-label', L.ui.stepLabel(index + 1, session.length));
     $('#act-group').textContent = groupName(activity.group);
     $('#act-title').textContent = activity.title;
     $('#act-instruction').textContent = activity.instruction(level);
@@ -333,11 +331,11 @@
       done(message) {
         if (finished) return;
         finished = true;
-        say(message || 'Well done!', true);
+        say(message || L.ui.wellDone, true);
         vibrate([40, 60, 40]);
         $('#act-actions').textContent = '';
         const last = index === session.length - 1;
-        const next = makeButton(last ? 'Finish' : 'Next activity', 'primary');
+        const next = makeButton(last ? L.ui.finish : L.ui.nextActivity, 'primary');
         next.addEventListener('click', () => {
           if (last) finishSession();
           else { index += 1; runActivity(); }
@@ -386,5 +384,15 @@
     }, 200);
   });
 
+  // Fill the page's fixed text from the language file.
+  function applyLanguage() {
+    document.documentElement.lang = L.code || 'en';
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const text = L.ui[node.dataset.i18n];
+      if (typeof text === 'string') node.textContent = text;
+    });
+  }
+
+  applyLanguage();
   applyBrand();
 })();

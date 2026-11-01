@@ -14,12 +14,16 @@
  *   api.setInstruction(text), api.later(fn, ms), api.onResize(fn),
  *   api.onCleanup(fn), api.cssVar(name), api.vibrate(ms).
  *
+ * All text people see comes from window.WELLNESS_LANG (js/lang/en.js or another language file).
+ *
  * Nothing here stores or sends anything.
  */
 (function () {
   const SVG_NS = 'http://www.w3.org/2000/svg';
   // Contacts larger than this (CSS px) are treated as a palm, not a stylus tip or fingertip.
   const PALM_SIZE = 70;
+  // All words people see come from the language file (js/lang/*.js).
+  const L = window.WELLNESS_LANG;
 
   const rand = (n) => Math.floor(Math.random() * n);
   const pick = (arr) => arr[rand(arr.length)];
@@ -134,36 +138,34 @@
 
   const DOT_SHAPES = {
     easy: [
-      { name: 'a house', pts: [[20, 85], [80, 85], [80, 45], [50, 15], [20, 45]] },
-      { name: 'a kite', pts: [[50, 8], [82, 42], [50, 92], [18, 42]] },
-      { name: 'a flag', pts: [[25, 90], [25, 10], [82, 28], [25, 46]] },
+      { id: 'house', pts: [[20, 85], [80, 85], [80, 45], [50, 15], [20, 45]] },
+      { id: 'kite', pts: [[50, 8], [82, 42], [50, 92], [18, 42]] },
+      { id: 'flag', pts: [[25, 90], [25, 10], [82, 28], [25, 46]] },
     ],
     medium: [
-      { name: 'a fish', pts: [[8, 50], [28, 30], [52, 25], [72, 40], [92, 24], [92, 76], [72, 60], [52, 75], [28, 70]] },
-      { name: 'a sailboat', pts: [[10, 64], [48, 64], [48, 10], [86, 60], [90, 64], [75, 86], [25, 86]] },
-      { name: 'an arrow', pts: [[8, 40], [60, 40], [60, 18], [92, 50], [60, 82], [60, 60], [8, 60]] },
+      { id: 'fish', pts: [[8, 50], [28, 30], [52, 25], [72, 40], [92, 24], [92, 76], [72, 60], [52, 75], [28, 70]] },
+      { id: 'sailboat', pts: [[10, 64], [48, 64], [48, 10], [86, 60], [90, 64], [75, 86], [25, 86]] },
+      { id: 'arrow', pts: [[8, 40], [60, 40], [60, 18], [92, 50], [60, 82], [60, 60], [8, 60]] },
     ],
     hard: [
-      { name: 'a star', pts: starPoints() },
-      { name: 'a tree', pts: [[50, 6], [76, 38], [63, 38], [84, 64], [55, 64], [55, 92], [45, 92], [45, 64], [16, 64], [37, 38], [24, 38]] },
-      { name: 'a heart', pts: heartPoints() },
+      { id: 'star', pts: starPoints() },
+      { id: 'tree', pts: [[50, 6], [76, 38], [63, 38], [84, 64], [55, 64], [55, 92], [45, 92], [45, 64], [16, 64], [37, 38], [24, 38]] },
+      { id: 'heart', pts: heartPoints() },
     ],
   };
 
   ACTIVITIES.push({
     id: 'dots',
     group: 'hand',
-    title: 'Connect the dots',
-    instruction: (level) => (level === 'easy'
-      ? 'Tap the dots in number order, starting with 1. The next dot to tap has a circle around it.'
-      : 'Tap the dots in number order, starting with 1.'),
+    title: L.dots.title,
+    instruction: (level) => L.dots.instruction(level),
     mount(api) {
       const cfg = { easy: { r: 7, font: 6.2 }, medium: { r: 5.6, font: 4.8 }, hard: { r: 4.6, font: 4 } }[api.level];
       const shape = pick(DOT_SHAPES[api.level]);
       const pts = shape.pts;
 
       const holder = el('div', 'pad');
-      const svg = svgEl('svg', { viewBox: '-8 -8 116 116', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'Numbered dots' });
+      const svg = svgEl('svg', { viewBox: '-8 -8 116 116', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': L.dots.aria });
       const reveal = svgEl('polygon', { class: 'dots-reveal', points: pointsAttr(pts) });
       const lines = svgEl('g');
       const dots = svgEl('g');
@@ -210,7 +212,7 @@
         });
         if (hit === -1 || hit < next) return;
         if (hit !== next) {
-          api.say(`That is ${hit + 1}. Look for ${next + 1}.`);
+          api.say(L.dots.wrong(hit + 1, next + 1));
           return;
         }
         if (next > 0) line(pts[next - 1], pts[next]);
@@ -221,7 +223,7 @@
         if (next === pts.length) {
           line(pts[next - 1], pts[0]);
           reveal.classList.add('is-shown');
-          api.done(`You drew ${shape.name}!`);
+          api.done(L.dots.done(L.dots.names[shape.id]));
         }
       });
     },
@@ -263,8 +265,8 @@
   ACTIVITIES.push({
     id: 'maze',
     group: 'hand',
-    title: 'Find the way',
-    instruction: () => 'Start at the green circle. Drag along the open paths to the square in the far corner. The lines are walls you cannot cross.',
+    title: L.maze.title,
+    instruction: () => L.maze.instruction,
     mount(api) {
       const n = { easy: 4, medium: 6, hard: 8 }[api.level];
       const walls = makeMaze(n);
@@ -354,7 +356,7 @@
           if (c === null) return;
           const i = path.indexOf(c);
           if (i === -1) {
-            api.say(path.length === 1 ? 'Start at the green circle.' : 'Keep going from the end of your line. It has a ring around it.');
+            api.say(path.length === 1 ? L.maze.start : L.maze.keepGoing);
             return;
           }
           path = path.slice(0, i + 1);
@@ -374,7 +376,7 @@
           if (walls[last][dir]) {
             const now = Date.now();
             if (now - lastWallMsg > 1500) {
-              api.say('That is a wall. Look for an open path.');
+              api.say(L.maze.wall);
               lastWallMsg = now;
             }
             return;
@@ -385,7 +387,7 @@
             finished = true;
             drawing = false;
             draw();
-            api.done('You found the way!');
+            api.done(L.maze.done);
           }
         },
         up() { drawing = false; },
@@ -400,47 +402,47 @@
 
   const COPY_MODELS = {
     easy: [
-      { name: 'a square', strokes: [[[20, 20], [80, 20], [80, 80], [20, 80], [20, 20]]] },
-      { name: 'a triangle', strokes: [[[50, 15], [86, 82], [14, 82], [50, 15]]] },
-      { name: 'a plus sign', strokes: [[[50, 12], [50, 88]], [[12, 50], [88, 50]]] },
+      { id: 'square', strokes: [[[20, 20], [80, 20], [80, 80], [20, 80], [20, 20]]] },
+      { id: 'triangle', strokes: [[[50, 15], [86, 82], [14, 82], [50, 15]]] },
+      { id: 'plus', strokes: [[[50, 12], [50, 88]], [[12, 50], [88, 50]]] },
     ],
     medium: [
-      { name: 'a house', strokes: [[[22, 50], [22, 86], [78, 86], [78, 50], [22, 50]], [[14, 52], [50, 16], [86, 52]]] },
-      { name: 'an envelope', strokes: [[[12, 26], [88, 26], [88, 76], [12, 76], [12, 26]], [[12, 26], [50, 54], [88, 26]]] },
-      { name: 'an arrow', strokes: [[[50, 88], [50, 14]], [[24, 40], [50, 14], [76, 40]]] },
+      { id: 'house', strokes: [[[22, 50], [22, 86], [78, 86], [78, 50], [22, 50]], [[14, 52], [50, 16], [86, 52]]] },
+      { id: 'envelope', strokes: [[[12, 26], [88, 26], [88, 76], [12, 76], [12, 26]], [[12, 26], [50, 54], [88, 26]]] },
+      { id: 'arrow', strokes: [[[50, 88], [50, 14]], [[24, 40], [50, 14], [76, 40]]] },
     ],
     hard: [
       {
-        name: 'a house with a door and window',
+        id: 'houseDetail',
         strokes: [
           [[22, 50], [22, 86], [78, 86], [78, 50], [22, 50]], [[14, 52], [50, 16], [86, 52]],
           [[44, 86], [44, 66], [58, 66], [58, 86]], [[28, 58], [38, 58], [38, 68], [28, 68], [28, 58]],
         ],
       },
-      { name: 'a star', strokes: [starPoints().concat([starPoints()[0]])] },
-      { name: 'two overlapping squares', strokes: [[[12, 12], [60, 12], [60, 60], [12, 60], [12, 12]], [[40, 40], [88, 40], [88, 88], [40, 88], [40, 40]]] },
+      { id: 'star', strokes: [starPoints().concat([starPoints()[0]])] },
+      { id: 'twoSquares', strokes: [[[12, 12], [60, 12], [60, 60], [12, 60], [12, 12]], [[40, 40], [88, 40], [88, 88], [40, 88], [40, 40]]] },
     ],
   };
 
   ACTIVITIES.push({
     id: 'copy',
     group: 'hand',
-    title: 'Copy the drawing',
-    instruction: () => 'Look at the small drawing. Draw the same thing in the big box. It does not have to be perfect.',
+    title: L.copy.title,
+    instruction: () => L.copy.instruction,
     mount(api) {
       const model = pick(COPY_MODELS[api.level]);
       const box = el('div', 'model-box');
-      const ms = svgEl('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': `A drawing of ${model.name}` });
+      const ms = svgEl('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': L.copy.aria(L.copy.names[model.id]) });
       model.strokes.forEach((st) => ms.appendChild(svgEl('polyline', { points: pointsAttr(st), class: 'model-line' })));
-      box.append(ms, el('p', 'model-label', `Draw ${model.name}`));
+      box.append(ms, el('p', 'model-label', L.copy.label(L.copy.names[model.id])));
       const holder = el('div', 'pad');
       api.area.append(box, holder);
       const pad = makeCanvas(holder);
 
       let strokes = [];
       let points = 0;
-      const clear = api.button('Clear', 'secondary');
-      const doneBtn = api.button("I'm done", 'primary');
+      const clear = api.button(L.copy.clear, 'secondary');
+      const doneBtn = api.button(L.copy.doneButton, 'primary');
       doneBtn.disabled = true;
 
       function style(g) {
@@ -478,7 +480,7 @@
         up() {
           if (points >= 25) {
             doneBtn.disabled = false;
-            api.say('Tap "I\'m done" when you are happy with it.');
+            api.say(L.copy.hint);
           }
         },
       });
@@ -490,7 +492,7 @@
         api.say('');
         redraw();
       });
-      doneBtn.addEventListener('click', () => api.done('Nice drawing!'));
+      doneBtn.addEventListener('click', () => api.done(L.copy.done));
 
       const layout = () => { if (pad.fit()) redraw(); };
       afterLayout(layout);
@@ -504,40 +506,13 @@
 
   /* ---------- Odd one out ---------- */
 
-  const ODD_SETS = {
-    easy: [
-      { items: ['Apple', 'Banana', 'Chair'], odd: 'Chair', why: 'Apples and bananas are fruits.' },
-      { items: ['Dog', 'Cat', 'Spoon'], odd: 'Spoon', why: 'Dogs and cats are animals.' },
-      { items: ['Red', 'Blue', 'Table'], odd: 'Table', why: 'Red and blue are colors.' },
-      { items: ['Shirt', 'Sock', 'Carrot'], odd: 'Carrot', why: 'Shirts and socks are clothes.' },
-      { items: ['Bus', 'Train', 'Pillow'], odd: 'Pillow', why: 'Buses and trains are ways to travel.' },
-      { items: ['Rose', 'Daisy', 'Hammer'], odd: 'Hammer', why: 'Roses and daisies are flowers.' },
-    ],
-    medium: [
-      { items: ['Piano', 'Guitar', 'Violin', 'Teapot'], odd: 'Teapot', why: 'Pianos, guitars and violins are instruments.' },
-      { items: ['Monday', 'Friday', 'Sunday', 'April'], odd: 'April', why: 'April is a month. The others are days of the week.' },
-      { items: ['Oak', 'Maple', 'Pine', 'Tulip'], odd: 'Tulip', why: 'Oak, maple and pine are trees.' },
-      { items: ['Eagle', 'Robin', 'Sparrow', 'Salmon'], odd: 'Salmon', why: 'A salmon is a fish. The others are birds.' },
-      { items: ['Winter', 'Summer', 'Autumn', 'Tuesday'], odd: 'Tuesday', why: 'Winter, summer and autumn are seasons.' },
-      { items: ['Fork', 'Knife', 'Spoon', 'Shovel'], odd: 'Shovel', why: 'Forks, knives and spoons are used for eating.' },
-    ],
-    hard: [
-      { items: ['2', '4', '8', '9'], odd: '9', why: '2, 4 and 8 are even numbers. 9 is odd.' },
-      { items: ['Copper', 'Iron', 'Silver', 'Marble'], odd: 'Marble', why: 'Copper, iron and silver are metals.' },
-      { items: ['Whale', 'Dolphin', 'Seal', 'Shark'], odd: 'Shark', why: 'A shark is a fish. Whales, dolphins and seals are mammals.' },
-      { items: ['Square', 'Triangle', 'Circle', 'Cube'], odd: 'Cube', why: 'A cube is solid. The others are flat shapes.' },
-      { items: ['Mars', 'Venus', 'Jupiter', 'Moon'], odd: 'Moon', why: 'The Moon is not a planet. The others are.' },
-      { items: ['Inch', 'Mile', 'Foot', 'Pound'], odd: 'Pound', why: 'A pound measures weight. The others measure length.' },
-    ],
-  };
-
   ACTIVITIES.push({
     id: 'odd',
     group: 'thinking',
-    title: 'Odd one out',
-    instruction: () => 'Tap the word that does not belong with the others.',
+    title: L.odd.title,
+    instruction: () => L.odd.instruction,
     mount(api) {
-      const rounds = pickN(ODD_SETS[api.level], api.level === 'easy' ? 3 : 4);
+      const rounds = pickN(L.odd.sets[api.level], api.level === 'easy' ? 3 : 4);
       let r = 0;
       const label = el('p', 'round-label');
       const grid = el('div', 'choice-grid');
@@ -545,7 +520,7 @@
 
       function show() {
         const set = rounds[r];
-        label.textContent = `Question ${r + 1} of ${rounds.length}`;
+        label.textContent = L.ui.question(r + 1, rounds.length);
         grid.textContent = '';
         shuffle(set.items).forEach((word) => {
           const b = el('button', 'choice', word);
@@ -554,15 +529,15 @@
             if (word === set.odd) {
               b.classList.add('is-right');
               grid.querySelectorAll('button').forEach((x) => { x.disabled = true; });
-              api.say(`Yes! ${set.why}`, true);
+              api.say(L.odd.right(set.why), true);
               api.vibrate(30);
               api.later(() => {
                 r += 1;
-                if (r < rounds.length) { api.say(''); show(); } else api.done('You found every odd one out!');
+                if (r < rounds.length) { api.say(''); show(); } else api.done(L.odd.done);
               }, 1800);
             } else {
               b.classList.add('is-wrong');
-              api.say('Not quite. Which one is different from the rest?');
+              api.say(L.odd.wrong);
             }
           });
           grid.appendChild(b);
@@ -574,52 +549,30 @@
 
   /* ---------- Put in order ---------- */
 
-  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-  function numbersRound(count, max) {
-    const nums = pickN(Array.from({ length: max }, (_, i) => i + 1), count).sort((a, b) => a - b).map(String);
-    return { prompt: 'Tap the numbers from smallest to largest.', items: nums };
+  // Builds one round from a definition in the language file (see order.rounds in js/lang/en.js).
+  function makeRound(def) {
+    if (def.type === 'numbers') {
+      const nums = pickN(Array.from({ length: def.max }, (_, i) => i + 1), def.count).sort((a, b) => a - b).map(String);
+      return { prompt: def.prompt, items: nums };
+    }
+    if (def.type === 'slice') {
+      const start = rand(def.list.length - def.count + 1);
+      return { prompt: def.prompt, items: def.list.slice(start, start + def.count) };
+    }
+    if (def.type === 'pick') {
+      const chosen = new Set(pickN(def.list, def.count));
+      return { prompt: def.prompt, items: def.list.filter((x) => chosen.has(x)) };
+    }
+    return { prompt: def.prompt, items: def.items.slice() };
   }
-  const fixed = (prompt, items) => () => ({ prompt, items });
-
-  const ORDER_ROUNDS = {
-    easy: [
-      () => numbersRound(3, 20),
-      fixed('Tap the meals in the order you eat them in a day.', ['Breakfast', 'Lunch', 'Dinner']),
-      fixed('Tap the sizes from smallest to largest.', ['Small', 'Medium', 'Large']),
-      fixed('Tap the times of day in the order they happen.', ['Morning', 'Afternoon', 'Evening']),
-    ],
-    medium: [
-      () => numbersRound(4, 50),
-      () => {
-        const s = rand(4);
-        return { prompt: 'Tap the days in the order they come in the week.', items: DAYS.slice(s, s + 4) };
-      },
-      fixed('Tap the seasons in order, starting with spring.', ['Spring', 'Summer', 'Autumn', 'Winter']),
-      fixed('Tap the steps in the order they happen.', ['Plant the seed', 'Water it', 'It sprouts', 'It flowers']),
-    ],
-    hard: [
-      () => numbersRound(5, 100),
-      () => {
-        const s = rand(8);
-        return { prompt: 'Tap the months in the order they come in the year.', items: MONTHS.slice(s, s + 5) };
-      },
-      () => {
-        const letters = pickN('ABCDEFGHIJKLMNOPRSTW'.split(''), 5).sort();
-        return { prompt: 'Tap the letters in alphabetical order.', items: letters };
-      },
-      fixed('Tap the stages of a plant in order.', ['Seed', 'Sprout', 'Bud', 'Flower', 'Fruit']),
-    ],
-  };
 
   ACTIVITIES.push({
     id: 'order',
     group: 'thinking',
-    title: 'Put in order',
-    instruction: () => 'Read the question, then tap the answers in the right order. Each one you get right is numbered.',
+    title: L.order.title,
+    instruction: () => L.order.instruction,
     mount(api) {
-      const rounds = pickN(ORDER_ROUNDS[api.level], 2).map((make) => make());
+      const rounds = pickN(L.order.rounds[api.level], 2).map(makeRound);
       let r = 0;
       const label = el('p', 'round-label');
       const prompt = el('p', 'order-prompt');
@@ -629,7 +582,7 @@
       function show() {
         const round = rounds[r];
         let k = 0;
-        label.textContent = `Question ${r + 1} of ${rounds.length}`;
+        label.textContent = L.ui.question(r + 1, rounds.length);
         prompt.textContent = round.prompt;
         list.textContent = '';
         let order = shuffle(round.items);
@@ -649,16 +602,16 @@
               api.say('');
               api.vibrate(15);
               if (k === round.items.length) {
-                api.say('That is the right order!', true);
+                api.say(L.order.right, true);
                 list.querySelectorAll('button').forEach((x) => { x.disabled = true; });
                 api.later(() => {
                   r += 1;
-                  if (r < rounds.length) { api.say(''); show(); } else api.done('You put everything in order!');
+                  if (r < rounds.length) { api.say(''); show(); } else api.done(L.order.done);
                 }, 1500);
               }
             } else {
               b.classList.add('is-wrong');
-              api.say(k === 0 ? 'Not that one yet. Which one comes first?' : 'Not that one yet. Which one comes next?');
+              api.say(k === 0 ? L.order.wrongFirst : L.order.wrongNext);
             }
           });
           list.appendChild(b);
@@ -674,26 +627,21 @@
 
   /* ---------- Typing ---------- */
 
-  const TYPING_WORDS = {
-    easy: ['cat', 'sun', 'hat', 'cup', 'dog', 'pen', 'map', 'bed', 'jam', 'egg'],
-    medium: ['apple', 'garden', 'window', 'pencil', 'flower', 'bread', 'river', 'basket'],
-    hard: ['good morning', 'thank you', 'see you soon', 'happy birthday', 'call me later', 'have a nice day'],
-  };
   const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, ' ');
 
   ACTIVITIES.push({
     id: 'typing',
     group: 'phone',
-    title: 'Typing',
-    instruction: () => 'Tap the white box to open the keyboard. Type what you see, then tap Check.',
+    title: L.typing.title,
+    instruction: () => L.typing.instruction,
     mount(api) {
-      const words = pickN(TYPING_WORDS[api.level], api.level === 'hard' ? 2 : 3);
+      const words = pickN(L.typing.words[api.level], api.level === 'hard' ? 2 : 3);
       let r = 0;
       const label = el('p', 'round-label');
       const target = el('p', 'typing-target');
       const form = el('form', 'typing-form');
       form.noValidate = true;
-      const inputLabel = el('label', null, 'Type here');
+      const inputLabel = el('label', null, L.typing.label);
       inputLabel.htmlFor = 'typing-input';
       const input = el('input', 'typing-input');
       input.id = 'typing-input';
@@ -705,10 +653,10 @@
       input.spellcheck = false;
       form.append(inputLabel, input);
       api.area.append(label, target, form);
-      const check = api.button('Check', 'primary');
+      const check = api.button(L.typing.check, 'primary');
 
       function show() {
-        label.textContent = `${r + 1} of ${words.length}`;
+        label.textContent = L.ui.progress(r + 1, words.length);
         target.textContent = words[r];
         input.value = '';
         input.disabled = false;
@@ -716,18 +664,18 @@
       }
       function submit() {
         const typed = normalize(input.value);
-        if (!typed) { api.say('Type the word first, then tap Check.'); return; }
+        if (!typed) { api.say(L.typing.empty); return; }
         if (typed === normalize(words[r])) {
-          api.say('Correct!', true);
+          api.say(L.typing.right, true);
           api.vibrate(30);
           input.disabled = true;
           check.disabled = true;
           api.later(() => {
             r += 1;
-            if (r < words.length) { api.say(''); show(); } else api.done('You typed every one!');
+            if (r < words.length) { api.say(''); show(); } else api.done(L.typing.done);
           }, 1200);
         } else {
-          api.say('Almost. Compare each letter with what is shown above, then try again.');
+          api.say(L.typing.wrong);
         }
       }
       form.addEventListener('submit', (e) => { e.preventDefault(); submit(); });
@@ -738,21 +686,11 @@
 
   /* ---------- Scroll and find ---------- */
 
-  const FIRST_NAMES = [
-    'Alice', 'Arthur', 'Barbara', 'Bernard', 'Carol', 'Charles', 'Dorothy', 'Donald', 'Edith', 'Edward',
-    'Frances', 'Frank', 'Gloria', 'George', 'Helen', 'Harold', 'Irene', 'Isaac', 'Joan', 'James',
-    'Kathleen', 'Kenneth', 'Linda', 'Leonard', 'Margaret', 'Martin', 'Nancy', 'Norman', 'Olive', 'Oscar',
-    'Patricia', 'Paul', 'Rose', 'Raymond', 'Shirley', 'Samuel', 'Theresa', 'Thomas', 'Ursula', 'Victor',
-    'Virginia', 'Walter', 'Wanda', 'Albert', 'Betty', 'Clara', 'Dennis', 'Eleanor', 'Florence', 'Gerald',
-    'Hazel', 'Howard', 'Janet', 'Louise', 'Marion', 'Philip', 'Ruth', 'Stanley', 'Vera', 'Wilbur',
-  ];
-  const INITIALS = 'ABCDEFGHJKLMNPRSTW'.split('');
-
   ACTIVITIES.push({
     id: 'scroll',
     group: 'phone',
-    title: 'Scroll and find',
-    instruction: () => 'Slide your finger up or down on the list to scroll. Find the name shown at the top and tap it.',
+    title: L.scroll.title,
+    instruction: () => L.scroll.instruction,
     mount(api) {
       const count = { easy: 15, medium: 30, hard: 50 }[api.level];
       const rounds = api.level === 'easy' ? 1 : 2;
@@ -760,18 +698,18 @@
       const label = el('p', 'round-label');
       const goal = el('p', 'find-target');
       const list = el('div', 'find-list');
-      list.setAttribute('aria-label', 'Contact list');
+      list.setAttribute('aria-label', L.scroll.listLabel);
       api.area.append(label, goal, list);
 
       function show() {
-        const names = pickN(FIRST_NAMES, count)
-          .map((f) => `${f} ${pick(INITIALS)}.`)
-          .sort((a, b) => a.localeCompare(b));
+        const names = pickN(L.scroll.names, count)
+          .map((f) => `${f} ${pick(L.scroll.initials)}.`)
+          .sort((a, b) => a.localeCompare(b, L.code));
         const start = Math.floor(count * 0.45);
         const target = names[start + rand(count - start)];
-        label.textContent = rounds > 1 ? `${r + 1} of ${rounds}` : '';
+        label.textContent = rounds > 1 ? L.ui.progress(r + 1, rounds) : '';
         label.hidden = rounds === 1;
-        goal.textContent = 'Find: ';
+        goal.textContent = L.scroll.find;
         goal.appendChild(el('strong', null, target));
         list.textContent = '';
         list.scrollTop = 0;
@@ -783,14 +721,14 @@
             if (name === target) {
               b.classList.add('is-right');
               list.querySelectorAll('button').forEach((x) => { x.disabled = true; });
-              api.say('You found it!', true);
+              api.say(L.scroll.right, true);
               api.vibrate(30);
               api.later(() => {
                 r += 1;
-                if (r < rounds) { api.say(''); show(); } else api.done('You found every name!');
+                if (r < rounds) { api.say(''); show(); } else api.done(L.scroll.done);
               }, 1200);
             } else {
-              api.say(`That is ${name}. Keep looking for ${target}.`);
+              api.say(L.scroll.wrong(name, target));
             }
           });
           list.appendChild(b);
@@ -805,8 +743,8 @@
   ACTIVITIES.push({
     id: 'slider',
     group: 'phone',
-    title: 'Use a slider',
-    instruction: () => 'Press the round knob and slide it to the numbered marker, like turning the volume up or down. Then let go.',
+    title: L.slider.title,
+    instruction: () => L.slider.instruction,
     mount(api) {
       const cfg = { easy: { rounds: 2, tol: 8 }, medium: { rounds: 3, tol: 5 }, hard: { rounds: 3, tol: 3 } }[api.level];
       let r = 0;
@@ -823,7 +761,7 @@
       input.min = '0';
       input.max = '100';
       input.step = '1';
-      input.setAttribute('aria-label', 'Slider');
+      input.setAttribute('aria-label', L.slider.aria);
       wrap.append(marker, input);
       const now = el('p', 'slider-now');
       api.area.append(label, goalText, wrap, now);
@@ -833,26 +771,26 @@
         const start = target > 50 ? rand(21) : 80 + rand(21);
         input.value = String(start);
         input.disabled = false;
-        label.textContent = `${r + 1} of ${cfg.rounds}`;
-        goalText.textContent = 'Move the knob to ';
+        label.textContent = L.ui.progress(r + 1, cfg.rounds);
+        goalText.textContent = L.slider.goal;
         goalText.appendChild(el('strong', null, String(target)));
         markerLabel.textContent = String(target);
         wrap.style.setProperty('--t', String(target));
-        now.textContent = `The knob is at ${start}`;
+        now.textContent = L.slider.now(start);
       }
-      input.addEventListener('input', () => { now.textContent = `The knob is at ${input.value}`; });
+      input.addEventListener('input', () => { now.textContent = L.slider.now(input.value); });
       input.addEventListener('change', () => {
         const diff = Number(input.value) - target;
         if (Math.abs(diff) <= cfg.tol) {
-          api.say('Right on the mark!', true);
+          api.say(L.slider.right, true);
           api.vibrate(30);
           input.disabled = true;
           api.later(() => {
             r += 1;
-            if (r < cfg.rounds) { api.say(''); show(); } else api.done('You can use a slider!');
+            if (r < cfg.rounds) { api.say(''); show(); } else api.done(L.slider.done);
           }, 1200);
         } else {
-          api.say(diff < 0 ? 'Close. Slide it a little to the right.' : 'Close. Slide it a little to the left.');
+          api.say(diff < 0 ? L.slider.more : L.slider.less);
         }
       });
       show();
@@ -862,13 +800,13 @@
   /* ---------- Swipe ---------- */
 
   const ARROWS = { left: '←', right: '→', up: '↑', down: '↓' };
-  const swipeText = (d) => (d === 'left' || d === 'right' ? `Swipe the card to the ${d}.` : `Swipe the card ${d}.`);
+  const swipeText = (d) => L.swipe.text(d);
 
   ACTIVITIES.push({
     id: 'swipe',
     group: 'phone',
-    title: 'Swiping',
-    instruction: () => 'Put your finger on the card and slide it the way the arrow points, like flipping through photos.',
+    title: L.swipe.title,
+    instruction: () => L.swipe.instruction,
     mount(api) {
       const total = { easy: 3, medium: 5, hard: 6 }[api.level];
       const base = api.level === 'hard' ? ['left', 'right', 'up', 'down'] : ['left', 'right'];
@@ -882,10 +820,10 @@
 
       function show() {
         const want = seq[i];
-        label.textContent = `Card ${i + 1} of ${total}: ${swipeText(want)}`;
+        label.textContent = L.swipe.card(i + 1, total, swipeText(want));
         stage.textContent = '';
         const card = el('div', 'swipe-card');
-        card.append(el('span', 'swipe-arrow', ARROWS[want]), el('span', 'swipe-word', want[0].toUpperCase() + want.slice(1)));
+        card.append(el('span', 'swipe-arrow', ARROWS[want]), el('span', 'swipe-word', L.swipe.word[want]));
         card.setAttribute('aria-label', swipeText(want));
         stage.appendChild(card);
 
@@ -925,13 +863,13 @@
               setPos(out[0], out[1]);
               api.later(() => {
                 i += 1;
-                if (i < total) show(); else { stage.textContent = ''; api.done('You can swipe!'); }
+                if (i < total) show(); else { stage.textContent = ''; api.done(L.swipe.done); }
               }, reduceMotion ? 50 : 320);
             } else {
               card.className = 'swipe-card is-settling';
               setPos(0, 0);
-              if (dir) api.say(`That went ${dir}. ${swipeText(want)}`);
-              else if (Math.abs(dx) + Math.abs(dy) > 12) api.say('Slide a little farther before you let go.');
+              if (dir) api.say(L.swipe.wrongDir(L.swipe.dir[dir], swipeText(want)));
+              else if (Math.abs(dx) + Math.abs(dy) > 12) api.say(L.swipe.tooShort);
             }
           },
         });
@@ -966,10 +904,8 @@
   ACTIVITIES.push({
     id: 'zoom',
     group: 'phone',
-    title: 'Zoom in',
-    instruction: (level) => (level === 'easy'
-      ? 'Find the small sign in the picture. Spread two fingers apart on the picture to zoom in, read the number, then tap it below. The Zoom in and Zoom out buttons work too.'
-      : 'Somewhere in the picture is a small sign with a number. Spread two fingers apart to zoom in, read it, then tap it below. Drag with one finger to look around. The Zoom in and Zoom out buttons work too.'),
+    title: L.zoom.title,
+    instruction: (level) => L.zoom.instruction(level),
     mount(api) {
       const cfg = {
         easy: { font: 3.2, choices: 3, spots: [[54, 54]] },
@@ -984,7 +920,7 @@
       while (options.size < cfg.choices) options.add(10 + rand(90));
 
       const view = el('div', 'zoom-view');
-      const svg = svgEl('svg', { viewBox: `0 0 ${SCENE_W} ${SCENE_H}`, preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'A picture of a house, a tree and a small sign' });
+      const svg = svgEl('svg', { viewBox: `0 0 ${SCENE_W} ${SCENE_H}`, preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': L.zoom.aria });
       buildScene(svg);
       const [sx, sy] = pick(cfg.spots);
       const bw = cfg.font * 2.4;
@@ -999,13 +935,13 @@
       view.appendChild(svg);
 
       const tools = el('div', 'zoom-tools');
-      const zin = el('button', 'btn btn-secondary', 'Zoom in');
-      const zout = el('button', 'btn btn-secondary', 'Zoom out');
-      const zreset = el('button', 'btn btn-secondary', 'Reset');
+      const zin = el('button', 'btn btn-secondary', L.zoom.zoomIn);
+      const zout = el('button', 'btn btn-secondary', L.zoom.zoomOut);
+      const zreset = el('button', 'btn btn-secondary', L.zoom.reset);
       [zin, zout, zreset].forEach((b) => { b.type = 'button'; tools.appendChild(b); });
 
       const choices = el('div', 'choice-grid zoom-choices');
-      const ask = el('p', 'round-label', 'What number is on the sign?');
+      const ask = el('p', 'round-label', L.zoom.ask);
       api.area.append(view, tools, ask, choices);
 
       // View state: center point and zoom level. Changing the viewBox keeps the picture sharp.
@@ -1109,10 +1045,10 @@
           if (num === answer) {
             b.classList.add('is-right');
             choices.querySelectorAll('button').forEach((x) => { x.disabled = true; });
-            api.done(`Yes, the sign says ${answer}!`);
+            api.done(L.zoom.done(answer));
           } else {
             b.classList.add('is-wrong');
-            api.say('Not quite. Zoom in closer to read the sign.');
+            api.say(L.zoom.wrong);
           }
         });
         choices.appendChild(b);

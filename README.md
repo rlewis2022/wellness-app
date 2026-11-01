@@ -60,9 +60,27 @@ Everything a clinic would change lives in one file: **`brand.js`**. The brand ca
 
 **Example:** `brands/example-clinic/` holds a made-up clinic's `brand.js`, logo and dark-mode logo. To try it, copy `brands/example-clinic/brand.js` over the top-level `brand.js`, keeping a copy of the original first.
 
-**Live demo.** The `demo/` folder shows a made-up "Demo Clinic" brand at `/demo/` on the same site, with a note that it is not a real clinic. It has its own `brand.js` and logos in that folder.
+**Live demos.** Two made-up "Demo Clinic" demos run on the same site, each marked as not a real clinic:
+
+- `/demo/`: English, with its own `brand.js` and logos in the `demo/` folder.
+- `/somali-demo/`: Somali, with its own `brand.js` in the `somali-demo/` folder (see Languages below).
+
+Both demo pages are copies of `index.html` with paths adjusted. If you change `index.html`, update them too.
 
 **One site per clinic.** Each deployment shows one brand. For several clinics, deploy a copy of the site for each one with its own `brand.js` and logo.
+
+## Languages
+
+All the words people see, and the language-specific content (puzzles, names, typing words), live in one file per language:
+
+- `js/lang/en.js`: English, used by the main page.
+- `js/lang/so.js`: Somali (Af-Soomaali), used by `/somali-demo/`.
+
+**The Somali is a draft.** It has not been reviewed by a native speaker yet, and the demo page says so. Have it checked before showing it to patients. Plain, warm wording matters more than a literal translation.
+
+The Somali content is adapted rather than translated: Somali names in the contact list, the Somali seasons (Jiilaal, Gu', Xagaa, Dayr), a week that starts on Saturday, everyday Somali words for typing, and counting words in place of alphabetical order.
+
+**To add a language:** copy `js/lang/en.js`, translate it, and adapt the content lists to that language and culture. Then point a page's `<script src="js/lang/...">` at the new file. Each page shows one language.
 
 ## Running it
 
@@ -82,7 +100,8 @@ Then open `http://localhost:8000`. Opening `index.html` directly from disk may n
 
 | What | Where |
 |---|---|
-| Words, puzzles, names and pictures | Lists near each activity in `js/activities.js`: `DOT_SHAPES`, `COPY_MODELS`, `ODD_SETS`, `ORDER_ROUNDS`, `TYPING_WORDS`, `FIRST_NAMES` |
+| All text, puzzles, typing words and names | The language file, such as `js/lang/en.js` |
+| Pictures for connect the dots and copy the drawing | `DOT_SHAPES` and `COPY_MODELS` in `js/activities.js` (their names are in the language file) |
 | How hard each level is | The `cfg` values at the top of each activity's `mount` function in `js/activities.js` |
 | Adding an activity | Add an object to `ACTIVITIES` in `js/activities.js` with `id`, `group` (`'hand'`, `'thinking'` or `'phone'`), `title`, `instruction(level)` and `mount(api)` |
 | Palm size cut-off | `PALM_SIZE` in `js/activities.js` |
