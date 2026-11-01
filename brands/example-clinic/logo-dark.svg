@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" role="img" aria-label="Example Clinic">
+  <circle cx="40" cy="40" r="32" fill="#5B3F8C"/>
+  <path d="M40 22 C 30 32, 30 48, 40 58 C 50 48, 50 32, 40 22 Z" fill="#FFFFFF"/>
+  <path d="M24 40 H 56" stroke="#F2B544" stroke-width="5" stroke-linecap="round"/>
+  <text x="84" y="50" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#F1ECFA">Example Clinic</text>
+</svg>

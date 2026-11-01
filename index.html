@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Privacy: this policy blocks every network request except loading this site's own files.
+       No analytics, no web fonts, no third-party scripts, nothing sent anywhere. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#2F6B5E">
+  <title>Wellness App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- START -->
+  <section id="start" class="screen">
+    <header class="brand-header">
+      <img id="brand-logo" class="brand-logo" alt="" hidden>
+      <h1 id="brand-name">Wellness App</h1>
+      <p id="brand-tagline" class="lede">A few minutes a day to keep your hands and mind active.</p>
+    </header>
+
+    <p id="brand-welcome" class="welcome" hidden></p>
+
+    <div class="level-picker" role="group" aria-labelledby="level-label">
+      <p id="level-label" class="section-label">Choose your level</p>
+      <button type="button" class="level-option" data-level="easy" aria-pressed="true">
+        <span class="level-check" aria-hidden="true"></span>
+        <span class="level-text">
+          <span class="level-name">Easy</span>
+          <span class="level-desc">Bigger targets, fewer steps</span>
+        </span>
+      </button>
+      <button type="button" class="level-option" data-level="medium" aria-pressed="false">
+        <span class="level-check" aria-hidden="true"></span>
+        <span class="level-text">
+          <span class="level-name">Medium</span>
+          <span class="level-desc">A little more to do</span>
+        </span>
+      </button>
+      <button type="button" class="level-option" data-level="hard" aria-pressed="false">
+        <span class="level-check" aria-hidden="true"></span>
+        <span class="level-text">
+          <span class="level-name">Hard</span>
+          <span class="level-desc">Smaller targets, more steps</span>
+        </span>
+      </button>
+    </div>
+
+    <button id="start-button" class="btn btn-primary btn-wide" type="button">Start today's session</button>
+    <p class="hint">Three short activities, picked at random. Take as long as you need.</p>
+
+    <div id="brand-contact" class="brand-contact" hidden>
+      <p id="brand-contact-text"></p>
+      <a id="brand-website" href="#" target="_blank" rel="noopener noreferrer" hidden></a>
+    </div>
+
+    <footer class="start-notes">
+      <p>Nothing you do here is saved or sent anywhere. Closing this page starts fresh.</p>
+      <p>For general wellness only. Not intended to diagnose, treat or prevent any condition.</p>
+    </footer>
+  </section>
+
+  <!-- ACTIVITY -->
+  <section id="activity" class="screen" hidden>
+    <header class="bar">
+      <button class="btn btn-quiet" type="button" id="end-button">End session</button>
+      <img id="bar-logo" class="bar-logo" alt="" hidden>
+      <p class="step" id="act-step">1 of 3</p>
+    </header>
+    <div class="act-head">
+      <p class="eyebrow" id="act-group"></p>
+      <h2 id="act-title"></h2>
+      <p id="act-instruction" class="instruction"></p>
+    </div>
+    <div id="act-area" class="act-area"></div>
+    <p id="act-feedback" class="feedback" aria-live="polite"></p>
+    <footer id="act-actions" class="actions"></footer>
+  </section>
+
+  <!-- END SESSION? -->
+  <section id="confirm" class="screen screen-center" hidden>
+    <h2>End this session?</h2>
+    <p class="center-text">You can start a new session any time.</p>
+    <button id="keep-going" class="btn btn-primary btn-wide" type="button">Keep going</button>
+    <button id="confirm-end" class="btn btn-secondary btn-wide" type="button">End session</button>
+  </section>
+
+  <!-- FINISH -->
+  <section id="finish" class="screen screen-center" hidden>
+    <img id="finish-logo" class="finish-logo" alt="" hidden>
+    <div class="done-check" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 21 L17 28 L30 13"/></svg>
+    </div>
+    <h2>Well done!</h2>
+    <p class="center-text">You finished today's three activities. Come back tomorrow for a new mix.</p>
+    <p id="finish-message" class="center-text finish-message" hidden></p>
+    <button id="again-button" class="btn btn-primary btn-wide" type="button">Do another session</button>
+    <button id="home-button" class="btn btn-secondary btn-wide" type="button">Back to start</button>
+    <div id="finish-contact" class="brand-contact" hidden>
+      <p id="finish-contact-text"></p>
+      <a id="finish-website" href="#" target="_blank" rel="noopener noreferrer" hidden></a>
+    </div>
+  </section>
+
+</main>
+<script src="brand.js"></script>
+<script src="js/activities.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
