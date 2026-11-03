@@ -150,6 +150,7 @@
       website: isHttps(contact.website) ? contact.website.trim() : '',
       websiteLabel: isText(contact.websiteLabel) ? contact.websiteLabel.trim() : '',
       finishMessage: isText(b.finishMessage) ? b.finishMessage.trim() : '',
+      cloudflareToken: (b.analytics && /^[A-Za-z0-9_-]{16,64}$/.test(b.analytics.cloudflareToken || '')) ? b.analytics.cloudflareToken : '',
     };
   }
 
@@ -393,6 +394,32 @@
     });
   }
 
+  /*
+   * Visit counting (clinic pages only).
+   * Counts page opens with Cloudflare Web Analytics when both are true:
+   *   1. the page has <meta name="wellness-counting" content="allowed">, and its
+   *      security policy allows Cloudflare (the main page has neither), and
+   *   2. brand.js sets analytics.cloudflareToken.
+   * Nothing about what people do in the activities is sent. Only the page opening is counted.
+   */
+  function startCounting() {
+    const allowed = document.querySelector('meta[name="wellness-counting"][content="allowed"]');
+    const token = readBrand().cloudflareToken;
+    if (!allowed || !token) return false;
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    s.setAttribute('data-cf-beacon', JSON.stringify({ token }));
+    document.head.appendChild(s);
+    const note = document.querySelector('[data-i18n="privacyNote"]');
+    if (note && L.ui.privacyNoteCounted) {
+      note.dataset.i18n = 'privacyNoteCounted';
+      note.textContent = L.ui.privacyNoteCounted;
+    }
+    return true;
+  }
+
   applyLanguage();
   applyBrand();
+  startCounting();
 })();

@@ -25,13 +25,28 @@ There is no timer and no score. Wrong answers get a gentle hint and another try.
 
 ## Privacy
 
-Nothing is kept and nothing is sent.
+On the main page, nothing is kept and nothing is sent. Clinic pages can optionally count visits (see "Visit counting for clinics" below).
 
 - **No storage.** No cookies, localStorage, IndexedDB, or any other browser storage. Each visit starts fresh.
-- **No network requests.** No analytics, no web fonts, no third-party scripts. A Content Security Policy in `index.html` blocks every network connection except loading the site's own files.
+- **No network requests on the main page.** No analytics, no web fonts, no third-party scripts. A Content Security Policy in `index.html` blocks every network connection except loading the site's own files.
 - **Typed text stays on the page.** The typing activity's box has autocomplete off, and nothing typed is stored.
 
 What the site cannot control: the host (GitHub Pages, your own server, and so on) may keep standard web server logs, such as IP addresses and visit times.
+
+## Visit counting for clinics
+
+Clinic pages can count **how many times the page is opened**, so a clinic can see how much its branded app is used. Nothing about what people do in the activities is sent, and no personal information is collected or saved by the app.
+
+- **Service:** [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/about/), which is free and works on GitHub Pages. Cloudflare says it does not collect or use visitors' personal data.
+- **Off by default.** Counting starts only when **both** are true:
+  1. the page opts in with `<meta name="wellness-counting" content="allowed">`, and its security policy allows `static.cloudflareinsights.com` and `cloudflareinsights.com` (the `demo/` and `somali-demo/` pages do; the main page does not), and
+  2. that page's `brand.js` sets `analytics.cloudflareToken` to the site token from Cloudflare.
+- **The main page never counts.** It has no opt-in tag, and its security policy blocks Cloudflare even if a token is set.
+- **The privacy note changes automatically.** When counting is on, the start page says no personal information is collected and that the page counts how many times it is opened.
+- **A technical note.** Any server a phone connects to sees the phone's IP address; that's how the internet works. The app doesn't send it on purpose, and the counting service reports only totals.
+- **Per-flyer counts.** Cloudflare does not record query strings (`?source=flyer`). To count each flyer or location separately, give each one its own page path.
+
+**To turn it on for a clinic page:** create a free Cloudflare account, add the site in **Web Analytics**, copy the site token from the snippet Cloudflare shows, and paste it into that page's `brand.js` as `analytics: { cloudflareToken: '...' }`. Have the clinic's compliance contact approve the wording first.
 
 ## Branding for a clinic
 
@@ -51,6 +66,7 @@ Everything a clinic would change lives in one file: **`brand.js`**. The brand ca
 | `font` | `'sans'`, `'serif'` or `'rounded'`, using fonts already on the device |
 | `contact.text`, `contact.website`, `contact.websiteLabel` | Contact line and link on the start and finish pages |
 | `finishMessage` | Extra line on the finish page |
+| `analytics.cloudflareToken` | Cloudflare site token for visit counting on clinic pages (see Visit counting for clinics) |
 
 **Rules the app enforces:**
 

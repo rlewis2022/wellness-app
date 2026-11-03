@@ -22,4 +22,11 @@ window.BRAND = {
     websiteLabel: 'Booqo Demo Clinic',
   },
   finishMessage: 'Berri ayaan ku aragnaa!',
+
+  // Visit counting for clinic pages (optional). Paste the site token from
+  // Cloudflare Web Analytics here to count how many times this page is opened.
+  // Leave '' to count nothing. Has no effect on the main page.
+  analytics: {
+    cloudflareToken: '',
+  },
 };

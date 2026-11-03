@@ -22,6 +22,7 @@ window.WELLNESS_LANG = {
     start: 'Bilow tababarka maanta',
     startHint: 'Saddex hawlood oo gaagaaban oo si kedis ah loo doortay. Qaado inta waqti ee aad u baahan tahay.',
     privacyNote: 'Waxa aad halkan ku samayso lama kaydiyo, meelna looma diro. Markaad boggan xirto, wax walba dib ayay u bilaabmayaan.',
+    privacyNoteCounted: 'Wax macluumaad shakhsi ah lama ururiyo lamana kaydiyo. Boggani wuxuu kaliya tiriyaa inta jeer ee la furo, si rugta caafimaadku u ogaato inta qof ee isticmaasha.',
     wellnessNote: 'Waxaa loogu talagalay caafimaadka guud oo keliya. Looma isticmaalo in lagu ogaado, lagu daaweeyo ama looga hortago xaalad caafimaad.',
     endShort: 'Jooji',
     confirmTitle: 'Ma joojinaysaa tababarkan?',

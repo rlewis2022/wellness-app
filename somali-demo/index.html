@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Privacy: this policy blocks every network request except loading this site's own files.
-       No analytics, no web fonts, no third-party scripts, nothing sent anywhere. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <!-- Privacy: this policy blocks every network request except this site's own files and
+       Cloudflare Web Analytics, which counts page opens when brand.js sets analytics.cloudflareToken.
+       No personal information is collected. No web fonts, no other third-party scripts. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; connect-src https://cloudflareinsights.com; form-action 'none'; base-uri 'none'">
   <meta name="referrer" content="no-referrer">
+  <meta name="wellness-counting" content="allowed">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#2F6B5E">
   <title>Demo Clinic: Tababar Maalinle</title>

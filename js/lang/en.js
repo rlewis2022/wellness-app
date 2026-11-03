@@ -20,6 +20,8 @@ window.WELLNESS_LANG = {
     start: "Start today's session",
     startHint: 'Three short activities, picked at random. Take as long as you need.',
     privacyNote: 'Nothing you do here is saved or sent anywhere. Closing this page starts fresh.',
+    // Shown instead on clinic pages that count visits.
+    privacyNoteCounted: 'No personal information is collected or saved. This page only counts how many times it is opened, so the clinic knows how many people use it.',
     wellnessNote: 'For general wellness only. Not intended to diagnose, treat or prevent any condition.',
     endShort: 'End session',
     confirmTitle: 'End this session?',
